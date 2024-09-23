@@ -1,0 +1,18 @@
+{
+    "django":{
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "Asd123asd123!",
+        "HOST": "3.134.89.231",
+        "PORT": "5432"
+    },
+    "postgres": {
+        "type": "postgres",
+        "host": "3.134.89.231",
+        "user": "postgres",
+        "password": "Asd123asd123!",
+        "database": "postgres",
+        "port": "5432"
+    }
+}

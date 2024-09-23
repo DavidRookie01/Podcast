@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+
+<head>
+    <title>Search Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<style>
+
+</style>
+
+<div style = "margin 20px"> 
+    <h4 id = "header">Podcast</h4>
+    <div class = "form-group form-inline">
+        <div style = "display: block">
+            <div id = 'podcast_info'></div>
+            <button class = 'btn btn-primary' onclick = "load_podcast()">Show</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var container  = document.getElementById('podcast_info')
+    var podcast_info_hot = new Handsontable(container,{
+        licenseKey: 'non-commercial-and-evaluation',
+        data: [],
+        minCols: 2,
+        maxCols: 2,
+        colWidths: [100, 300],
+        colHeaders: ['file id', 'file name'],
+        columns: [
+            {readOnly: true},
+            {readOnly: true}
+        ]
+    });
+
+    function load_podcast(){
+        $.ajax({
+            url: '/myapp/podcast/load_podcast',
+            success: function(data){
+                alert("data loaded")
+                podcast_info_hot.loadData(data.podcasts)
+            }
+        })
+    }
+</script>
+
+
+
