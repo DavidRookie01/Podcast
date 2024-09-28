@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<html lang="en">
 
 <head>
     <title>Search Page</title>
@@ -9,44 +9,88 @@
 </head>
 
 <style>
+    .search-container {
+        margin-top: 20px;
+        justify-content: center;
+    }
 
+    .search-bar {
+        padding: 10px;
+        font-size: 16px;
+        width: 300px;
+    }
+
+    .search-button {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background-color: #45a049;
+    }
+
+    #podcast_info {
+        margin-top: 20px;
+    }
 </style>
 
-<div style = "margin 20px"> 
-    <h4 id = "header">Podcast</h4>
-    <div class = "form-group form-inline">
-        <div style = "display: block">
-            <div id = 'podcast_info'></div>
-            <button class = 'btn btn-primary' onclick = "load_podcast()">Show</button>
+<body>
+
+<div style="margin: 20px"> 
+    <h4 id="header">Podcast</h4>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search...">
+        <button class="search-button" onclick="searchPodcasts()">Search</button>
+    </div>
+    <div class="form-group form-inline">
+        <div style="display: block">
+            <div id="podcast_info"></div>
+            <button class="btn btn-primary" onclick="load_podcast()">Show All</button>
         </div>
     </div>
 </div>
 
 <script>
-    var container  = document.getElementById('podcast_info')
-    var podcast_info_hot = new Handsontable(container,{
+    var container = document.getElementById('podcast_info');
+    var podcast_info_hot = new Handsontable(container, {
         licenseKey: 'non-commercial-and-evaluation',
-        data: [],
-        minCols: 2,
-        maxCols: 2,
-        colWidths: [100, 300],
-        colHeaders: ['file id', 'file name'],
-        columns: [
-            {readOnly: true},
-            {readOnly: true}
-        ]
+        data: [[]],
+        minCols: 7,
+        maxCols: 7,
+        colWidths: 200,
+        colHeaders: ['Title', 'Date', 'Link', 'Series Name', 'Speaker', 'Keywords', 'Podcast ID'],
     });
 
-    function load_podcast(){
+    function load_podcast() {
         $.ajax({
-            url: '/myapp/podcast/load_podcast',
-            success: function(data){
-                alert("data loaded")
-                podcast_info_hot.loadData(data.podcasts)
+            url: '/myapp/podcast/load_podcast/',
+            success: function(data) {
+                podcast_info_hot.loadData(data.podcasts);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error loading podcasts:", error);
             }
-        })
+        });
+    }
+
+    function searchPodcasts() {
+        var query = document.getElementById('searchInput').value; 
+        $.ajax({
+            url: '/myapp/podcast/searchPodcasts/',  
+            data: { query: query },  
+            success: function(data) {
+                podcast_info_hot.loadData(data.podcasts);
+            },
+            error: function(xhr, status, error) {
+                console.error("Error searching podcasts:", error);
+            }
+        });
     }
 </script>
 
-
-
+</body>
+</html>
