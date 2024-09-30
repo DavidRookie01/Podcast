@@ -1,0 +1,25 @@
+# Core Django framework
+Django==5.1.1
+
+# PostgreSQL database adapter
+psycopg2-binary==2.9.6
+
+# Data analysis and manipulation library
+pandas==2.1.0
+
+# Additional packages you might need (add if used in your project)
+
+# If using requests for making HTTP calls
+requests==2.31.0
+
+# If you are working with CORS in development
+django-cors-headers==3.14.0
+
+# If you're using a rich-text editor like Markdown in Django
+Markdown==3.4.4
+
+# If you're using a specific version of Handsontable in your project
+handsontable==12.1.0  # for example, if used as a dependency
+
+# If you use Jinja2 for templating or other functionalities
+Jinja2==3.1.2
