@@ -8,7 +8,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <style>
-        /* General Layout Styles */
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f9;
@@ -63,37 +62,6 @@
             background-color: #218838;
         }
 
-        /* Table Styles */
-        #podcast_info {
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-
-        .handsontable {
-            width: 100%;
-            border: 1px solid #ccc;
-            border-collapse: collapse;
-        }
-
-        .handsontable th, .handsontable td {
-            padding: 12px;
-            font-size: 14px;
-        }
-
-        /* Center text in table header and change header color to gray */
-        .handsontable th {
-            background-color: #d3d3d3; /* Gray background */
-            color: #333; /* Darker text for contrast */
-            font-weight: bold;
-            text-align: center; /* Center text in the table header */
-        }
-
-        .handsontable td {
-            border-bottom: 1px solid #ccc;
-            text-align: left;
-        }
-
-        /* Button for Showing All Podcasts */
         .show-all-button {
             display: block;
             margin: 30px auto;
@@ -107,16 +75,17 @@
         }
 
         .show-all-button:hover {
-            background-color: #b0b0b0; /* Slightly darker gray on hover */
+            background-color: #b0b0b0; 
         }
 
+        
         /* Ensuring the whole layout stays centered and aligned */
         .table-container {
             margin: 0 auto;
             padding: 20px;
             width: 100%;
             max-width: 1000px;
-        }
+        } 
 
     </style>
 </head>
@@ -124,36 +93,11 @@
 <body>
     <div class="container">
         <h4>Podcast</h4>
-
-        <!-- Search Section -->
         <div class="search-container">
             <input type="text" id="searchInput" class="search-bar" placeholder="Search podcasts...">
             <button class="search-button" onclick="searchPodcasts()">Search</button>
         </div>
-
-        <!-- Table Section (Placeholder when no data) -->
-        <div class="table-container">
-            <table class="handsontable">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Link</th>
-                        <th>Series Name</th>
-                        <th>Speaker</th>
-                        <th>Keywords</th>
-                        <th>Podcast ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #888;">No data available</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Button to Show All Podcasts -->
+        <div id = 'podcast_info'></div>
         <button class="show-all-button" onclick="load_podcast()">Show All</button>
     </div>
 
@@ -162,209 +106,10 @@
         var podcast_info_hot = new Handsontable(container, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [[]],
-            minCols: 7,
-            maxCols: 7,
+            minCols: 6,
+            maxCols: 6,
             colWidths: 200,
-            colHeaders: ['Title', 'Date', 'Link', 'Series Name', 'Speaker', 'Keywords', 'Podcast ID'],
-        });
-
-        function load_podcast() {
-            $.ajax({
-                url: '/myapp/podcast/load_podcast/',
-                success: function(data) {
-                    podcast_info_hot.loadData(data.podcasts);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error loading podcasts:", error);
-                }
-            });
-        }
-
-        function searchPodcasts() {
-            var query = document.getElementById('searchInput').value; 
-            $.ajax({
-                url: '/myapp/podcast/searchPodcasts/',
-                data: { query: query },
-                success: function(data) {
-                    podcast_info_hot.loadData(data.podcasts);
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error searching podcasts:", error);
-                }
-            });
-        }
-    </script>
-</body>
-
-</html>
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <title>Podcast Search Page</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <style>
-        /* General Layout Styles */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        h4 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 40px;
-        }
-
-        .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        /* Search Bar */
-        .search-bar {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            width: 400px;
-            border: 1px solid #ccc;
-        }
-
-        .search-button {
-            padding: 12px 20px;
-            margin-left: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .search-button:hover {
-            background-color: #218838;
-        }
-
-        /* Table Styles */
-        #podcast_info {
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-
-        .handsontable {
-            width: 100%;
-            border: 1px solid #ccc;
-            border-collapse: collapse;
-        }
-
-        .handsontable th, .handsontable td {
-            padding: 12px;
-            font-size: 14px;
-        }
-
-        /* Center text in table header and change header color to gray */
-        .handsontable th {
-            background-color: #d3d3d3; /* Gray background */
-            color: #333; /* Darker text for contrast */
-            font-weight: bold;
-            text-align: center; /* Center text in the table header */
-        }
-
-        .handsontable td {
-            border-bottom: 1px solid #ccc;
-            text-align: left;
-        }
-
-        /* Button for Showing All Podcasts */
-        .show-all-button {
-            display: block;
-            margin: 30px auto;
-            padding: 12px 25px;
-            background-color: #28a745; /* Green button */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .show-all-button:hover {
-            background-color: #b0b0b0; /* Slightly darker gray on hover */
-        }
-
-        /* Ensuring the whole layout stays centered and aligned */
-        .table-container {
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
-
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <h4>Podcast</h4>
-
-        <!-- Search Section -->
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-bar" placeholder="Search podcasts...">
-            <button class="search-button" onclick="searchPodcasts()">Search</button>
-        </div>
-
-        <!-- Table Section (Placeholder when no data) -->
-        <div class="table-container">
-            <table class="handsontable">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Date</th>
-                        <th>Link</th>
-                        <th>Series Name</th>
-                        <th>Speaker</th>
-                        <th>Keywords</th>
-                        <th>Podcast ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #888;">No data available</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Button to Show All Podcasts -->
-        <button class="show-all-button" onclick="load_podcast()">Show All</button>
-    </div>
-
-    <script>
-        var container = document.getElementById('podcast_info');
-        var podcast_info_hot = new Handsontable(container, {
-            licenseKey: 'non-commercial-and-evaluation',
-            data: [[]],
-            minCols: 7,
-            maxCols: 7,
-            colWidths: 200,
-            colHeaders: ['Title', 'Date', 'Link', 'Series Name', 'Speaker', 'Keywords', 'Podcast ID'],
+            colHeaders: ['Title', 'Date', 'Link', 'Series Name', 'Keywords', 'Podcast ID'],
         });
 
         function load_podcast() {
