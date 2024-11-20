@@ -4,9 +4,10 @@
 <head>
     <title>Podcast Search Page</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/handsontable@12.1.0/dist/handsontable.full.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -14,7 +15,7 @@
             margin: 0;
             padding: 0;
         }
-
+        
         .container {
             max-width: 1200px;
             margin: 40px auto;
@@ -24,69 +25,17 @@
             border-radius: 8px;
         }
 
-        h4 {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 40px;
+        .modal-dialog {
+            max-width: 90%; 
+            margin: 50px auto;
         }
 
-        .search-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
-        }
-
-        /* Search Bar */
-        .search-bar {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 5px;
-            width: 400px;
-            border: 1px solid #ccc;
-        }
-
-        .search-button {
-            padding: 12px 20px;
-            margin-left: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .search-button:hover {
-            background-color: #218838;
-        }
-
-        .show-all-button {
-            display: block;
-            margin: 30px auto;
-            padding: 12px 25px;
-            background-color: #28a745; /* Green button */
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .show-all-button:hover {
-            background-color: #b0b0b0; 
-        }
-
-        
-        /* Ensuring the whole layout stays centered and aligned */
-        .table-container {
-            margin: 0 auto;
+        .modal-content {
             padding: 20px;
-            width: 100%;
-            max-width: 1000px;
-        } 
-
+            border-radius: 8px;
+            overflow-y: auto; 
+            max-height: 80vh; 
+        }
     </style>
 </head>
 
@@ -97,20 +46,98 @@
             <input type="text" id="searchInput" class="search-bar" placeholder="Search podcasts...">
             <button class="search-button" onclick="searchPodcasts()">Search</button>
         </div>
-        <div id = 'podcast_info'></div>
+        <div id="podcast_info"></div>
         <button class="show-all-button" onclick="load_podcast()">Show All</button>
     </div>
+    
+    <!-- Modal for Episode Details -->
+    <div id="episodeModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="modalTitle">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="modalTitle" class="modal-title">Episode Details</h5>
+                    <button type="button" id="closeModal" class="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <!-- Left Column for Handsontable -->
+                        <div class="col-md-8">
+                            <div id="episodeDetailsContainer"></div>
+                        </div>
+    
+                        <!-- Right Column for Recommended Podcasts -->
+                        <div class="col-md-4">
+                            <h6>Recommended Podcasts</h6>
+                            <div id="recommendedPodcastsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 
     <script>
         var container = document.getElementById('podcast_info');
         var podcast_info_hot = new Handsontable(container, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [[]],
-            minCols: 6,
-            maxCols: 6,
+            minCols: 2,
+            maxCols: 2,
             colWidths: 200,
-            colHeaders: ['Title', 'Date', 'Link', 'Series Name', 'Keywords', 'Podcast ID'],
+            colHeaders: ['Podcast Name', 'Episode Name'],
+            afterOnCellMouseDown: function(event, coords) {
+                if (coords.col === 0) {
+                    var podcastName = podcast_info_hot.getDataAtCell(coords.row, 0);
+                    var episodeName = podcast_info_hot.getDataAtCell(coords.row, 1);
+                    $('#episodeModal').data('podcastName', podcastName);
+                    $('#episodeModal').data('episodeName', episodeName);
+                    $('#episodeModal').modal('show');
+                }
+            }
         });
+
+        var container_ep = document.getElementById('episodeDetailsContainer');
+        var episode_info_hot = new Handsontable(container_ep, {
+            licenseKey: 'non-commercial-and-evaluation',
+            data: [],
+            minRows: 4,
+            maxRows: 4,
+            rowHeaders: [
+                'Podcast Name', 
+                'Episode Name', 
+                'Summary',
+                'Keywords',
+            ],
+            width: '100%',
+            height: 'auto',
+            readOnly: true,
+            rowHeaderWidth: 100,
+            rowHeights: 100,
+            stretchH: 'all'  
+        });
+
+        var recommendedContainer = document.getElementById('recommendedPodcastsContainer');
+        var recommended_info_hot = new Handsontable(recommendedContainer, {
+            licenseKey: 'non-commercial-and-evaluation',
+            data: [],
+            colHeaders: ['Podcast Name', 'Episode Name','Date', 'Overlap'],
+            columns: [
+                { data: 0, renderer: "html" },
+                { data: 1 },
+                { data: 2 },
+                { data: 3 }
+            ],
+            width: '100%',
+            height: 300,
+            stretchH: 'all',
+            rowHeaders: false,
+            readOnly: true
+        });
+
 
         function load_podcast() {
             $.ajax({
@@ -137,6 +164,113 @@
                 }
             });
         }
+
+        // Dynamically load episode details and recommendations into the modal when shown
+        $('#episodeModal').on('shown.bs.modal', function () {
+            const podcastName = $(this).data('podcastName');
+            const episodeName = $(this).data('episodeName');
+
+            console.log(`Loading data for: Podcast = ${podcastName}, Episode = ${episodeName}`);
+
+            // AJAX request to fetch episode details and recommendations
+            $.ajax({
+                url: '/myapp/podcast/load_result/',
+                method: 'GET',
+                data: { podcast_name: podcastName, episode_name: episodeName },
+                success: function (data) {
+                    console.log('Data successfully loaded.');
+
+                    // Load episode details
+                    if (data.result && data.result.length > 0) {
+                        const formattedData = [
+                            [data.result[0]],
+                            [data.result[1]],
+                            [data.result[2] || 'No summary available'],
+                            [data.result[3] || 'No keywords available']
+                        ];
+                        episode_info_hot.loadData(formattedData);
+                    } else {
+                        episode_info_hot.loadData([
+                            ['No data available'],
+                            ['No data available'],
+                            ['No data available'],
+                            ['No data available']
+                        ]);
+                    }
+
+                    // Load recommendations
+                    if (data.recommendations && data.recommendations.length > 0) {
+                        const recommendationData = data.recommendations.map(rec => [
+                            `<a href="#" 
+                            class="recommendation-link" 
+                            data-podcast-name="${rec[0]}" 
+                            data-episode-name="${rec[1] || ''}">
+                            ${rec[0]}
+                            </a>`,
+                            rec[1] || 'Unknown Series', // Series Name
+                            rec[2] || 'Unknown Date',   // Date
+                            rec[3] || 0                 // Overlap
+                        ]);
+
+                        // Populate the Handsontable instance with recommendation data
+                        recommended_info_hot.loadData(recommendationData);
+                    } else {
+                        recommended_info_hot.loadData([['No recommendations available', '', '', '']]);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading episode details:", xhr.responseText);
+                    episode_info_hot.loadData([['Error loading data'], ['Error loading data'], ['Error loading data'], ['Error loading data']]);
+                    recommended_info_hot.loadData([['Error loading recommendations', '', '', '']]);
+                }
+            });
+        });
+
+        // Handle click on recommendation link using event delegation
+        $(document).on('click', '.recommendation-link', function (e) {
+            e.preventDefault(); // Prevent the default link behavior
+
+            console.log('clicked');
+
+            const podcastName = $(this).data('podcast-name');
+            const seriesName = $(this).data('episode-name');
+
+            console.log(podcastName)
+
+            if (!podcastName || !seriesName) {
+                console.error('Missing data attributes for podcastName or seriesName.');
+                return;
+            }
+
+            console.log(`Clicked recommendation: Podcast = ${podcastName}, Episode = ${seriesName}`);
+
+            if ($('#episodeModal').hasClass('show')) {
+                $('#episodeModal').one('hidden.bs.modal', function () {
+                    console.log('Modal fully closed. Reopening with new data...');
+                    openModalWithData(podcastName, seriesName);
+                });
+
+                $('#episodeModal').modal('hide');
+            } else {
+                console.log('Modal is not open. Opening directly...');
+                openModalWithData(podcastName, seriesName);
+            }
+        });
+
+        function openModalWithData(podcastName, seriesName) {
+            console.log(`Opening modal for Podcast = ${podcastName}, Episode = ${seriesName}`);
+            $('#episodeModal')
+                .data('podcastName', podcastName)
+                .data('episodeName', seriesName)
+                .modal('show');
+        }
+
+        function resetModalContent() {
+            episode_info_hot.loadData([['Loading...', '', '', '']]);
+            recommended_info_hot.loadData([['Loading recommendations...', '', '', '']]);
+        }
+
+
     </script>
 </body>
 

@@ -4,12 +4,12 @@
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "Asd123asd123!",
-        "HOST": "3.134.89.231",
+        "HOST": "18.221.15.186",
         "PORT": "5432"
     },
     "postgres": {
         "type": "postgres",
-        "host": "3.134.89.231",
+        "host": "18.221.15.186",
         "user": "postgres",
         "password": "Asd123asd123!",
         "database": "postgres",
