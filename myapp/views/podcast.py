@@ -16,12 +16,21 @@ def load_podcast(request):
 
 def searchPodcasts(request):
     query = request.GET.get('query')
+    mode = request.GET.get('mode')
+    print(mode)
+    print(query)
+    if query == None or query == '':
+        mode = 'Podcast Name'
     con, cursor = du.db_connect('postgres')
     query = '%' + query + '%'
-    
-    print(query)
-    cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.title ilike %s", [query])
+    if mode == 'Podcast Name':
+        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.title ilike %s", [query])
+    if mode == 'Keywords':
+        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.keywords ilike %s", [query])
+    if mode == 'Transcipts':
+        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.machine_summary ilike %s", [query])
     podcasts = cursor.fetchall()
+    print(podcasts)
     con.close()
     return JsonResponse({'podcasts': podcasts})
 
