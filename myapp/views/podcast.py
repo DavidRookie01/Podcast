@@ -9,7 +9,7 @@ def loadmain(request):
 
 def load_podcast(request):
     con, cursor = du.db_connect('postgres')
-    cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id)")
+    cursor.execute("select title, series_name from public.final_data fd ")
     podcasts = cursor.fetchall()
     con.close()
     return JsonResponse({'podcasts': podcasts})
@@ -24,11 +24,11 @@ def searchPodcasts(request):
     con, cursor = du.db_connect('postgres')
     query = '%' + query + '%'
     if mode == 'Podcast Name':
-        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.title ilike %s", [query])
+        cursor.execute("select title, series_name from public.final_data where title ilike %s", [query])
     if mode == 'Keywords':
-        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.keywords ilike %s", [query])
+        cursor.execute("select title, series_name from public.final_data where keywords ilike %s", [query])
     if mode == 'Transcipts':
-        cursor.execute("select twgt.title, twgt.series_name from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.machine_summary ilike %s", [query])
+        cursor.execute("select title, series_name from public.final_data where machine_summary ilike %s", [query])
     podcasts = cursor.fetchall()
     print(podcasts)
     con.close()
@@ -38,7 +38,7 @@ def load_result(request):
     podcast_name = request.GET.get("podcast_name")
     episode_name = request.GET.get("episode_name")
     con, cursor = du.db_connect('postgres')
-    cursor.execute("select twgt.title, twgt.series_name, twgt.machine_summary, kb.keywords_bert from public.keywords_bert kb join public.transcripts_w_grouping_temp twgt using (podcast_id) where twgt.title = %s and twgt.series_name = %s", [podcast_name, episode_name])
+    cursor.execute("select title, series_name, machine_summary, keywords, sentiments from public.final_data where title = %s and series_name = %s", [podcast_name, episode_name])
     result = cursor.fetchone()
     query = """
         WITH OverlapCounts AS (
@@ -58,24 +58,36 @@ def load_result(request):
                     (t1.feature_group_8 = 1 AND t2.feature_group_8 = 1)::int +
                     (t1.feature_group_9 = 1 AND t2.feature_group_9 = 1)::int +
                     (t1.feature_group_10 = 1 AND t2.feature_group_10 = 1)::int
-                ) AS overlap_count
-            FROM 
-                public.keywords_bert kb1
-            JOIN 
-                public.transcripts_w_grouping_temp t1 
-            ON kb1.podcast_id = t1.podcast_id
+                ) AS overlap_count,
+                ARRAY_REMOVE(
+                    ARRAY[
+                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t1.feature_word_1 ELSE NULL END,
+                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t1.feature_word_2 ELSE NULL END,
+                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t1.feature_word_3 ELSE NULL END,
+                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t1.feature_word_4 ELSE NULL END,
+                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t1.feature_word_5 ELSE NULL END,
+                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t1.feature_word_6 ELSE NULL END,
+                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t1.feature_word_7 ELSE NULL END,
+                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t1.feature_word_8 ELSE NULL END,
+                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t1.feature_word_9 ELSE NULL END,
+                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t1.feature_word_10 ELSE NULL END
+                    ], NULL
+                ) AS overlapping_keywords
+            FROM public.final_data t1 
             CROSS JOIN 
-                public.keywords_bert kb2
-            JOIN 
-                public.transcripts_w_grouping_temp t2 
-            ON kb2.podcast_id = t2.podcast_id
+                public.final_data t2 
             WHERE 
-                t1.title = %s 
-                AND t1.series_name = %s 
+                t1.title = %s
+                AND t1.series_name = %s
                 AND t1.podcast_id != t2.podcast_id
         ),
         FilteredRecommendations AS (
-            SELECT recommended_title as podcast_name, recommended_series_name as series_name, recommended_date as date, overlap_count as overlap_count
+            SELECT 
+                recommended_title AS podcast_name, 
+                recommended_series_name AS series_name, 
+                recommended_date AS date, 
+                overlap_count AS overlap_count, 
+                overlapping_keywords
             FROM OverlapCounts
             WHERE overlap_count > 0
             ORDER BY overlap_count DESC, recommended_date DESC
@@ -84,7 +96,6 @@ def load_result(request):
         SELECT *
         FROM FilteredRecommendations;
     """
-
     cursor.execute(query, [podcast_name, episode_name])
     recommendations = cursor.fetchall()
     print(recommendations)

@@ -179,13 +179,14 @@
         var episode_info_hot = new Handsontable(container_ep, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [],
-            minRows: 4,
-            maxRows: 4,
+            minRows: 5,
+            maxRows: 5,
             rowHeaders: [
                 'Podcast Name', 
                 'Episode Name', 
                 'Summary',
                 'Keywords',
+                'Sentiments',
             ],
             width: '100%',
             height: 'auto',
@@ -199,12 +200,13 @@
         var recommended_info_hot = new Handsontable(recommendedContainer, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [],
-            colHeaders: ['Podcast Name', 'Episode Name','Date', 'Overlap'],
+            colHeaders: ['Podcast Name', 'Episode Name','Date', 'Overlap', 'Keywords'],
             columns: [
                 { data: 0, renderer: "html" },
                 { data: 1 },
                 { data: 2 },
-                { data: 3 }
+                { data: 3 },
+                { data: 4 },
             ],
             width: '100%',
             height: 300,
@@ -262,11 +264,13 @@
                             [data.result[0]],
                             [data.result[1]],
                             [data.result[2] || 'No summary available'],
-                            [data.result[3] || 'No keywords available']
+                            [data.result[3] || 'No keywords available'],
+                            [data.result[4]]
                         ];
                         episode_info_hot.loadData(formattedData);
                     } else {
                         episode_info_hot.loadData([
+                            ['No data available'],
                             ['No data available'],
                             ['No data available'],
                             ['No data available'],
@@ -285,7 +289,8 @@
                             </a>`,
                             rec[1] || 'Unknown Series', // Series Name
                             rec[2] || 'Unknown Date',   // Date
-                            rec[3] || 0                 // Overlap
+                            rec[3] || 0,                 // Overlap
+                            rec[4]
                         ]);
 
                         // Populate the Handsontable instance with recommendation data
