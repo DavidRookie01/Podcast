@@ -9,7 +9,7 @@ def loadmain(request):
 
 def load_podcast(request):
     con, cursor = du.db_connect('postgres')
-    cursor.execute("select title, series_name from public.final_data fd ")
+    cursor.execute("select title, series_name from public.final_data fd order by feedback DESC NULLs Last")
     podcasts = cursor.fetchall()
     con.close()
     return JsonResponse({'podcasts': podcasts})
@@ -17,12 +17,11 @@ def load_podcast(request):
 def searchPodcasts(request):
     query = request.GET.get('query')
     mode = request.GET.get('mode')
-    print(mode)
-    print(query)
     if query == None or query == '':
         mode = 'Podcast Name'
     con, cursor = du.db_connect('postgres')
     query = '%' + query + '%'
+    print(query)
     if mode == 'Podcast Name':
         cursor.execute("select title, series_name from public.final_data where title ilike %s", [query])
     if mode == 'Keywords':
@@ -30,7 +29,6 @@ def searchPodcasts(request):
     if mode == 'Transcipts':
         cursor.execute("select title, series_name from public.final_data where machine_summary ilike %s", [query])
     podcasts = cursor.fetchall()
-    print(podcasts)
     con.close()
     return JsonResponse({'podcasts': podcasts})
 
@@ -98,7 +96,6 @@ def load_result(request):
     """
     cursor.execute(query, [podcast_name, episode_name])
     recommendations = cursor.fetchall()
-    print(recommendations)
     # human_summary, human_sentiment, human_keywords, machine_summaries, sentiments_summary, keywords_data_Tf_IDF, keywords_data_Bertopic = result[2], result[3], result[4], result[5], result[6], result[7], result[8]
     # human_keywords = human_keywords[10:]
     # human_sentiment = human_sentiment[10:]
@@ -118,9 +115,28 @@ def load_result(request):
     # keywords_data_Bertopic = ast.literal_eval(keywords_data_Bertopic)
     # keywords_data_Tf_IDF = ', '.join(f"{keyword}:{sentiment}" for keyword, sentiment in zip(keywords_data_Tf_IDF['Keywords_raw'], keywords_data_Tf_IDF['Keywords_Sentiments_raw']))
     # keywords_data_Bertopic = ', '.join(f"{keyword}:{sentiment}" for keyword, sentiment in zip(keywords_data_Bertopic['Keywords_raw'], keywords_data_Bertopic['Keywords_Sentiments_raw']))
-    print(result)
     con.close()
     return JsonResponse({'result': result, 'recommendations': recommendations})
+
+def update_feedback_positive(request):
+    podcast_name = request.GET.get("podcast_name")
+    episode_name = request.GET.get("episode_name")
+    print(episode_name)
+    con, cursor = du.db_connect("postgres")
+    cursor.execute("update public.final_data set feedback = coalesce(feedback, 0) + 1 where title = %s and series_name = %s", [podcast_name, episode_name])
+    con.close()
+    return JsonResponse({'msg': 'Thank you for your feedback'})
+    
+def update_feedback_negative(request):
+    podcast_name = request.GET.get("podcast_name")
+    episode_name = request.GET.get("episode_name")
+    con, cursor = du.db_connect("postgres")
+    cursor.execute("update public.final_data set feedback = coalesce(feedback, 0) - 1 where title = %s and series_name = %s", [podcast_name, episode_name])
+    con.close()
+    return JsonResponse({'msg': 'Thank you for your feedback'})
+
+
+    
 
 
     
