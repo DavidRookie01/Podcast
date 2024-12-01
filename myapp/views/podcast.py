@@ -89,7 +89,7 @@ def load_result(request):
             FROM OverlapCounts
             WHERE overlap_count > 0
             ORDER BY overlap_count DESC, recommended_date DESC
-            LIMIT 10
+            LIMIT 5
         )
         SELECT *
         FROM FilteredRecommendations;
@@ -132,8 +132,65 @@ def update_feedback_negative(request):
     episode_name = request.GET.get("episode_name")
     con, cursor = du.db_connect("postgres")
     cursor.execute("update public.final_data set feedback = coalesce(feedback, 0) - 1 where title = %s and series_name = %s", [podcast_name, episode_name])
-    con.close()
-    return JsonResponse({'msg': 'Thank you for your feedback'})
+    cursor.execute("""
+        WITH OverlapCounts AS (
+            SELECT 
+                t2.podcast_id AS recommended_podcast_id,
+                t2.title AS recommended_title,
+                t2.series_name AS recommended_series_name,
+                t2.date AS recommended_date,
+                (
+                    (t1.feature_group_1 = 1 AND t2.feature_group_1 = 1)::int +
+                    (t1.feature_group_2 = 1 AND t2.feature_group_2 = 1)::int +
+                    (t1.feature_group_3 = 1 AND t2.feature_group_3 = 1)::int +
+                    (t1.feature_group_4 = 1 AND t2.feature_group_4 = 1)::int +
+                    (t1.feature_group_5 = 1 AND t2.feature_group_5 = 1)::int +
+                    (t1.feature_group_6 = 1 AND t2.feature_group_6 = 1)::int +
+                    (t1.feature_group_7 = 1 AND t2.feature_group_7 = 1)::int +
+                    (t1.feature_group_8 = 1 AND t2.feature_group_8 = 1)::int +
+                    (t1.feature_group_9 = 1 AND t2.feature_group_9 = 1)::int +
+                    (t1.feature_group_10 = 1 AND t2.feature_group_10 = 1)::int
+                ) AS overlap_count,
+                ARRAY_REMOVE(
+                    ARRAY[
+                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t1.feature_word_1 ELSE NULL END,
+                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t1.feature_word_2 ELSE NULL END,
+                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t1.feature_word_3 ELSE NULL END,
+                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t1.feature_word_4 ELSE NULL END,
+                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t1.feature_word_5 ELSE NULL END,
+                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t1.feature_word_6 ELSE NULL END,
+                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t1.feature_word_7 ELSE NULL END,
+                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t1.feature_word_8 ELSE NULL END,
+                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t1.feature_word_9 ELSE NULL END,
+                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t1.feature_word_10 ELSE NULL END
+                    ], NULL
+                ) AS overlapping_keywords
+            FROM public.final_data t1 
+            CROSS JOIN 
+                public.final_data t2 
+            WHERE 
+                t1.title = %s
+                AND t1.series_name = %s
+                AND t1.podcast_id != t2.podcast_id
+        ),
+        FilteredRecommendations AS (
+            SELECT 
+                recommended_title AS podcast_name, 
+                recommended_series_name AS series_name, 
+                recommended_date AS date, 
+                overlap_count AS overlap_count, 
+                overlapping_keywords
+            FROM OverlapCounts
+            WHERE overlap_count > 0
+            ORDER BY overlap_count DESC, recommended_date DESC
+            LIMIT 10
+        )
+        SELECT *
+        FROM FilteredRecommendations
+        OFFSET 5;
+        """, [podcast_name, episode_name])
+    recommendations = cursor.fetchall()
+    return JsonResponse({'msg': 'Thank you for your feedback', 'recommendations': recommendations})
 
 
     

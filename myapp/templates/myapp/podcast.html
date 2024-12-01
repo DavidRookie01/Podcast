@@ -457,6 +457,21 @@
                 },
                 success: function (response) {
                     alert(response.msg);
+                    const recommendationData = response.recommendations.map(rec => [
+                        `<a href="#" 
+                        class="recommendation-link" 
+                        data-podcast-name="${rec[0]}" 
+                        data-episode-name="${rec[1] || ''}">
+                        ${rec[0]}
+                        </a>`,
+                        rec[1] || 'Unknown Series', // Series Name
+                        rec[2] || 'Unknown Date',   // Date
+                        rec[3] || 0,                 // Overlap
+                        rec[4]
+                    ]);
+
+                    // Populate the Handsontable instance with recommendation data
+                    recommended_info_hot.loadData(recommendationData);
                 },
                 error: function (xhr, status, error) {
                     console.error("Error updating feedback:", error);
