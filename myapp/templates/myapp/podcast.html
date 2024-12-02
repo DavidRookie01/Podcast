@@ -11,8 +11,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <style>
+        .handsontable .ht_master .htCore td {
+            white-space: normal; /* Allow text to wrap */
+            word-wrap: break-word; /* Wrap long words */
+            overflow: visible; /* Ensure content is fully visible */
+        }
+
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -88,12 +94,6 @@
             max-height: 80vh; 
         }
 
-        .thumb-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
         .btn-success, .btn-danger {
             padding: 8px 12px;
             font-size: 14px;
@@ -107,10 +107,10 @@
         }
 
         /* Button animations */
-        .thumb-buttons button {
+        /* .thumb-buttons button {
             position: relative;
             overflow: hidden;
-        }
+        } */
 
         .thumb-buttons button:after {
             content: '';
@@ -259,13 +259,17 @@
                 'Keywords',
                 'Sentiments',
             ],
-            width: '100%',
-            height: 'auto',
-            readOnly: true,
-            rowHeaderWidth: 100,
-            rowHeights: 100,
-            stretchH: 'all'  
+            rowHeaderWdith: 150, 
+            colWidths: 650,
+            rowHeights: function (row) {
+                return row === 2 ? 150 : 50; // Dynamically increase height for "Summary"
+            },
+            // stretchH: 'all', // Ensures columns fill container width
+            // wordWrap: true,  // Enables text wrapping
+            renderAllRows: true, // Ensures all rows are rendered for height calculations
+            readOnly: true,  // Makes cells read-only
         });
+
 
         var recommendedContainer = document.getElementById('recommendedPodcastsContainer');
         var recommended_info_hot = new Handsontable(recommendedContainer, {
