@@ -149,6 +149,18 @@
         .thumb-buttons button {
             transition: transform 0.2s ease;
         }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
     </style>
 </head>
 
@@ -162,8 +174,117 @@
         </div>
         <div id="podcast_info"></div>
         <button class="show-all-button" onclick="load_podcast()">Show All</button>
+        <br>
+        <h4>Keywords Wordcloud</h4>
+        <img src="word cloud.png" alt="Keywords Wordcloud" width="569" height="276">
+        <table>
+            <tr>
+                <th>Keyword</th>
+                <th>Count</th>
+                <th>Search Keyword</th>
+            </tr>
+            <tr>
+                <td>US</td>
+                <td>293</td>
+                <td onclick="searchKeywords('US')"><font color="#0000FF"><u>Search US</u></font></td>
+            </tr>
+            <tr>
+                <td>AI</td>
+                <td>275</td>
+                <td onclick="searchKeywords('AI')"><font color="#0000FF"><u>Search AI</u></font></td>
+            </tr>
+            <tr>
+                <td>market</td>
+                <td>125</td>
+                <td onclick="searchKeywords('market')"><font color="#0000FF"><u>Search market</u></font></td>
+            </tr>
+            <tr>
+                <td>election</td>
+                <td>122</td>
+                <td onclick="searchKeywords('election')"><font color="#0000FF"><u>Search election</u></font></td>
+            </tr>
+            <tr>
+                <td>China</td>
+                <td>121</td>
+                <td onclick="searchKeywords('China')"><font color="#0000FF"><u>Search China</u></font></td>
+            </tr>
+            <tr>
+                <td>rate</td>
+                <td>110</td>
+                <td onclick="searchKeywords('rate')"><font color="#0000FF"><u>Search rate</u></font></td>
+            </tr>
+            <tr>
+                <td>Trump</td>
+                <td>105</td>
+                <td onclick="searchKeywords('Trump')"><font color="#0000FF"><u>Search Trump</u></font></td>
+            </tr>
+            <tr>
+                <td>inflation</td>
+                <td>73</td>
+                <td onclick="searchKeywords('inflation')"><font color="#0000FF"><u>Search inflation</u></font></td>
+            </tr>
+            <tr>
+                <td>stock</td>
+                <td>72</td>
+                <td onclick="searchKeywords('stock')"><font color="#0000FF"><u>Search stock</u></font></td>
+            </tr>
+            <tr>
+                <td>Fed</td>
+                <td>67</td>
+                <td onclick="searchKeywords('Fed')"><font color="#0000FF"><u>Search Fed</u></font></td>
+            </tr>
+            <tr>
+                <td>Biden</td>
+                <td>65</td>
+                <td onclick="searchKeywords('Biden')"><font color="#0000FF"><u>Search Biden</u></font></td>
+            </tr>
+            <tr>
+                <td>bank</td>
+                <td>63</td>
+                <td onclick="searchKeywords('bank')"><font color="#0000FF"><u>Search bank</u></font></td>
+            </tr>
+            <tr>
+                <td>economy</td>
+                <td>53</td>
+                <td onclick="searchKeywords('economy')"><font color="#0000FF"><u>Search economy</u></font></td>
+            </tr>
+            <tr>
+                <td>UK</td>
+                <td>49</td>
+                <td onclick="searchKeywords('UK')"><font color="#0000FF"><u>Search UK</u></font></td>
+            </tr>
+            <tr>
+                <td>tech</td>
+                <td>43</td>
+                <td onclick="searchKeywords('tech')"><font color="#0000FF"><u>Search tech</u></font></td>
+            </tr>
+            <tr>
+                <td>Russia</td>
+                <td>43</td>
+                <td onclick="searchKeywords('Russia')"><font color="#0000FF"><u>Search Russia</u></font></td>
+            </tr>
+            <tr>
+                <td>Nvidia</td>
+                <td>42</td>
+                <td onclick="searchKeywords('Nvidia')"><font color="#0000FF"><u>Search Nvidia</u></font></td>
+            </tr>
+            <tr>
+                <td>Israel</td>
+                <td>42</td>
+                <td onclick="searchKeywords('Israel')"><font color="#0000FF"><u>Search Israel</u></font></td>
+            </tr>
+            <tr>
+                <td>Apple</td>
+                <td>39</td>
+                <td onclick="searchKeywords('Apple')"><font color="#0000FF"><u>Search Apple</u></font></td>
+            </tr>
+            <tr>
+                <td>tax</td>
+                <td>38</td>
+                <td onclick="searchKeywords('tax')"><font color="#0000FF"><u>Search tax</u></font></td>
+            </tr>
+        </table>
     </div>
-    
     
     <!-- Modal for Episode Details -->
     <div id="episodeModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" aria-labelledby="modalTitle">
@@ -306,6 +427,21 @@
         function searchPodcasts() {
             var query = document.getElementById('searchInput').value; 
             var mode = search_mode_hot.getDataAtCell(0, 0);
+            $.ajax({
+                url: '/myapp/podcast/searchPodcasts/',
+                data: { query: query, mode: mode},
+                success: function(data) {
+                    podcast_info_hot.loadData(data.podcasts);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error searching podcasts:", error);
+                }
+            });
+        }
+
+        function searchKeywords(query_kw) {
+            var query = query_kw; 
+            var mode = "Keywords";
             $.ajax({
                 url: '/myapp/podcast/searchPodcasts/',
                 data: { query: query, mode: mode},
