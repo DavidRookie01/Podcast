@@ -161,6 +161,10 @@
             text-align: left;
             padding: 8px;
         }
+
+        #togglePodcastInfoButton {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 
@@ -172,7 +176,10 @@
             <div id="search_mode"></div>
             <button class="search-button" onclick="searchPodcasts()">Search</button>
         </div>
-        <div id="podcast_info"></div>
+        <div id="podcast_info_container">
+            <button class="btn btn-primary" id="togglePodcastInfoButton">Toggle Table</button>
+            <div id="podcast_info"></div>
+        </div>
         <button class="show-all-button" onclick="load_podcast()">Show All</button>
         <br>
         <h4>Keywords Wordcloud</h4>
@@ -332,7 +339,7 @@
             minCols: 2,
             maxCols: 2,
             colWidths: 200,
-            colHeaders: ['Podcast Name', 'Episode Name'],
+            colHeaders: ['Episode Name', 'Podcast Name'],
             afterOnCellMouseDown: function(event, coords) {
                 if (coords.col === 0) {
                     var podcastName = podcast_info_hot.getDataAtCell(coords.row, 0);
@@ -356,7 +363,7 @@
             columns: [
                 {
                     type: 'dropdown',
-                    source: ['Podcast Name', 'Keywords', 'Transcripts'],
+                    source: ['Episode Name', 'Keywords', 'Transcripts'],
                 }
             ],
             cells: function (row, col, prop) {
@@ -374,8 +381,8 @@
             minRows: 5,
             maxRows: 5,
             rowHeaders: [
-                'Podcast Name', 
                 'Episode Name', 
+                'Podcast Name', 
                 'Summary',
                 'Keywords',
                 'Sentiments',
@@ -396,7 +403,7 @@
         var recommended_info_hot = new Handsontable(recommendedContainer, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [],
-            colHeaders: ['Podcast Name', 'Episode Name','Date', 'Overlap', 'Keywords'],
+            colHeaders: ['Episode Name', 'Podcast Name','Date', 'Overlap', 'Keywords'],
             columns: [
                 { data: 0, renderer: "html" },
                 { data: 1 },
@@ -618,6 +625,18 @@
                 }
             });
         });
+
+        document.getElementById('togglePodcastInfoButton').addEventListener('click', function () {
+            const podcastInfoContainer = document.getElementById('podcast_info');
+            if (podcastInfoContainer.style.display === 'none') {
+                podcastInfoContainer.style.display = 'block'; // Show the Handsontable
+                this.textContent = 'Collapse Table'; // Update button text
+            } else {
+                podcastInfoContainer.style.display = 'none'; // Hide the Handsontable
+                this.textContent = 'Expand Table'; // Update button text
+            }
+        });
+
 
     </script>
 </body>

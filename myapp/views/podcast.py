@@ -27,7 +27,7 @@ def searchPodcasts(request):
     if mode == 'Keywords':
         cursor.execute("select title, series_name from public.final_data where keywords ilike %s", [query])
     if mode == 'Transcipts':
-        cursor.execute("select title, series_name from public.final_data where machine_summary ilike %s", [query])
+        cursor.execute("select title, series_name from public.final_data where transcript ilike %s", [query])
     podcasts = cursor.fetchall()
     con.close()
     return JsonResponse({'podcasts': podcasts})
