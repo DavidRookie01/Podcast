@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -183,7 +184,7 @@
         <button class="show-all-button" onclick="load_podcast()">Show All</button>
         <br>
         <h4>Keywords Wordcloud</h4>
-        <img src="word cloud.png" alt="Keywords Wordcloud" width="569" height="276">
+        <img src="{% static 'myapp/word cloud.png' %}" alt="Keywords Wordcloud" width="569" height="276">
         <table>
             <tr>
                 <th>Keyword</th>
@@ -387,8 +388,8 @@
                 'Keywords',
                 'Sentiments',
             ],
-            rowHeaderWdith: 150, 
-            colWidths: 650,
+            rowHeaderWidth: 100, 
+            colWidths: 500,
             rowHeights: function (row) {
                 return row === 2 ? 150 : 50; // Dynamically increase height for "Summary"
             },
@@ -403,7 +404,7 @@
         var recommended_info_hot = new Handsontable(recommendedContainer, {
             licenseKey: 'non-commercial-and-evaluation',
             data: [],
-            colHeaders: ['Episode Name', 'Podcast Name','Date', 'Overlap', 'Keywords'],
+            colHeaders: ['Podcast Name', 'Episode Name','Date', 'Overlap', 'Keywords'],
             columns: [
                 { data: 0, renderer: "html" },
                 { data: 1 },

@@ -59,16 +59,16 @@ def load_result(request):
                 ) AS overlap_count,
                 ARRAY_REMOVE(
                     ARRAY[
-                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t1.feature_word_1 ELSE NULL END,
-                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t1.feature_word_2 ELSE NULL END,
-                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t1.feature_word_3 ELSE NULL END,
-                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t1.feature_word_4 ELSE NULL END,
-                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t1.feature_word_5 ELSE NULL END,
-                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t1.feature_word_6 ELSE NULL END,
-                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t1.feature_word_7 ELSE NULL END,
-                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t1.feature_word_8 ELSE NULL END,
-                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t1.feature_word_9 ELSE NULL END,
-                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t1.feature_word_10 ELSE NULL END
+                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t2.feature_word_1 ELSE NULL END,
+                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t2.feature_word_2 ELSE NULL END,
+                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t2.feature_word_3 ELSE NULL END,
+                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t2.feature_word_4 ELSE NULL END,
+                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t2.feature_word_5 ELSE NULL END,
+                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t2.feature_word_6 ELSE NULL END,
+                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t2.feature_word_7 ELSE NULL END,
+                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t2.feature_word_8 ELSE NULL END,
+                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t2.feature_word_9 ELSE NULL END,
+                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t2.feature_word_10 ELSE NULL END
                     ], NULL
                 ) AS overlapping_keywords
             FROM public.final_data t1 
