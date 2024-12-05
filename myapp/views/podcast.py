@@ -18,15 +18,15 @@ def searchPodcasts(request):
     query = request.GET.get('query')
     mode = request.GET.get('mode')
     if query == None or query == '':
-        mode = 'Podcast Name'
+        mode = 'Episode Name'
     con, cursor = du.db_connect('postgres')
     query = '%' + query + '%'
     print(query)
-    if mode == 'Podcast Name':
+    if mode == 'Episode Name':
         cursor.execute("select title, series_name from public.final_data where title ilike %s", [query])
     if mode == 'Keywords':
         cursor.execute("select title, series_name from public.final_data where keywords ilike %s", [query])
-    if mode == 'Transcipts':
+    if mode == 'Transcripts':
         cursor.execute("select title, series_name from public.final_data where transcript ilike %s", [query])
     podcasts = cursor.fetchall()
     con.close()
@@ -153,16 +153,16 @@ def update_feedback_negative(request):
                 ) AS overlap_count,
                 ARRAY_REMOVE(
                     ARRAY[
-                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t1.feature_word_1 ELSE NULL END,
-                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t1.feature_word_2 ELSE NULL END,
-                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t1.feature_word_3 ELSE NULL END,
-                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t1.feature_word_4 ELSE NULL END,
-                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t1.feature_word_5 ELSE NULL END,
-                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t1.feature_word_6 ELSE NULL END,
-                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t1.feature_word_7 ELSE NULL END,
-                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t1.feature_word_8 ELSE NULL END,
-                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t1.feature_word_9 ELSE NULL END,
-                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t1.feature_word_10 ELSE NULL END
+                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t2.feature_word_1 ELSE NULL END,
+                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t2.feature_word_2 ELSE NULL END,
+                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t2.feature_word_3 ELSE NULL END,
+                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t2.feature_word_4 ELSE NULL END,
+                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t2.feature_word_5 ELSE NULL END,
+                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t2.feature_word_6 ELSE NULL END,
+                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t2.feature_word_7 ELSE NULL END,
+                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t2.feature_word_8 ELSE NULL END,
+                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t2.feature_word_9 ELSE NULL END,
+                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t2.feature_word_10 ELSE NULL END
                     ], NULL
                 ) AS overlapping_keywords
             FROM public.final_data t1 
