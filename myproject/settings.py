@@ -15,7 +15,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATIC_URL = 'static/'  # This is likely already present.
+STATIC_URL = '/static/'  # This is likely already present.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +25,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SECRET_KEY = 'django-insecure-2q8vkml$iv65zls_jp$_o%kk712ivyzii3p5zn-%3p*xj1dp8_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['18.221.15.186','127.0.0.1', 'localhost']
 
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'myapp'
 ]
@@ -125,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
