@@ -55,21 +55,41 @@ def load_result(request):
                     (t1.feature_group_7 = 1 AND t2.feature_group_7 = 1)::int +
                     (t1.feature_group_8 = 1 AND t2.feature_group_8 = 1)::int +
                     (t1.feature_group_9 = 1 AND t2.feature_group_9 = 1)::int +
-                    (t1.feature_group_10 = 1 AND t2.feature_group_10 = 1)::int
+                    (t1.feature_group_10 = 1 AND t2.feature_group_10 = 1)::int +
+                    (t1.feature_group_11 = 1 AND t2.feature_group_11 = 1)::int +
+                    (t1.feature_group_12 = 1 AND t2.feature_group_12 = 1)::int +
+                    (t1.feature_group_13 = 1 AND t2.feature_group_13 = 1)::int +
+                    (t1.feature_group_14 = 1 AND t2.feature_group_14 = 1)::int +
+                    (t1.feature_group_15 = 1 AND t2.feature_group_15 = 1)::int +
+                    (t1.feature_group_16 = 1 AND t2.feature_group_16 = 1)::int +
+                    (t1.feature_group_17 = 1 AND t2.feature_group_17 = 1)::int +
+                    (t1.feature_group_18 = 1 AND t2.feature_group_18 = 1)::int +
+                    (t1.feature_group_19 = 1 AND t2.feature_group_19 = 1)::int +
+                    (t1.feature_group_20 = 1 AND t2.feature_group_20 = 1)::int +
+                    (t1.feature_group_21 = 1 AND t2.feature_group_21 = 1)::int
                 ) AS overlap_count,
-                ARRAY_REMOVE(
-                    ARRAY[
-                        CASE WHEN t1.feature_group_1 = 1 AND t2.feature_group_1 = 1 THEN t2.feature_word_1 ELSE NULL END,
-                        CASE WHEN t1.feature_group_2 = 1 AND t2.feature_group_2 = 1 THEN t2.feature_word_2 ELSE NULL END,
-                        CASE WHEN t1.feature_group_3 = 1 AND t2.feature_group_3 = 1 THEN t2.feature_word_3 ELSE NULL END,
-                        CASE WHEN t1.feature_group_4 = 1 AND t2.feature_group_4 = 1 THEN t2.feature_word_4 ELSE NULL END,
-                        CASE WHEN t1.feature_group_5 = 1 AND t2.feature_group_5 = 1 THEN t2.feature_word_5 ELSE NULL END,
-                        CASE WHEN t1.feature_group_6 = 1 AND t2.feature_group_6 = 1 THEN t2.feature_word_6 ELSE NULL END,
-                        CASE WHEN t1.feature_group_7 = 1 AND t2.feature_group_7 = 1 THEN t2.feature_word_7 ELSE NULL END,
-                        CASE WHEN t1.feature_group_8 = 1 AND t2.feature_group_8 = 1 THEN t2.feature_word_8 ELSE NULL END,
-                        CASE WHEN t1.feature_group_9 = 1 AND t2.feature_group_9 = 1 THEN t2.feature_word_9 ELSE NULL END,
-                        CASE WHEN t1.feature_group_10 = 1 AND t2.feature_group_10 = 1 THEN t2.feature_word_10 ELSE NULL END
-                    ], NULL
+                CONCAT(
+					IF((t1.feature_group_1 = 1 AND t2.feature_group_1 = 1) ? t2.feature_word_1+', ' : NULL),
+					IF((t1.feature_group_2 = 1 AND t2.feature_group_2 = 1) ? t2.feature_word_2+', ' : NULL),
+					IF((t1.feature_group_3 = 1 AND t2.feature_group_3 = 1) ? t2.feature_word_3+', ' : NULL),
+					IF((t1.feature_group_4 = 1 AND t2.feature_group_4 = 1) ? t2.feature_word_4+', ' : NULL),
+					IF((t1.feature_group_5 = 1 AND t2.feature_group_5 = 1) ? t2.feature_word_5+', ' : NULL),
+					IF((t1.feature_group_6 = 1 AND t2.feature_group_6 = 1) ? t2.feature_word_6+', ' : NULL),
+					IF((t1.feature_group_7 = 1 AND t2.feature_group_7 = 1) ? t2.feature_word_7+', ' : NULL),
+					IF((t1.feature_group_8 = 1 AND t2.feature_group_8 = 1) ? t2.feature_word_8+', ' : NULL),
+					IF((t1.feature_group_9 = 1 AND t2.feature_group_9 = 1) ? t2.feature_word_9+', ' : NULL),
+					IF((t1.feature_group_10 = 1 AND t2.feature_group_10 = 1) ? t2.feature_word_10+', ' : NULL),
+					IF((t1.feature_group_11 = 1 AND t2.feature_group_11 = 1) ? t2.feature_word_11+', ' : NULL),
+					IF((t1.feature_group_12 = 1 AND t2.feature_group_12 = 1) ? t2.feature_word_12+', ' : NULL),
+					IF((t1.feature_group_13 = 1 AND t2.feature_group_13 = 1) ? t2.feature_word_13+', ' : NULL),
+					IF((t1.feature_group_14 = 1 AND t2.feature_group_14 = 1) ? t2.feature_word_14+', ' : NULL),
+					IF((t1.feature_group_15 = 1 AND t2.feature_group_15 = 1) ? t2.feature_word_15+', ' : NULL),
+					IF((t1.feature_group_16 = 1 AND t2.feature_group_16 = 1) ? t2.feature_word_16+', ' : NULL),
+					IF((t1.feature_group_17 = 1 AND t2.feature_group_17 = 1) ? t2.feature_word_17+', ' : NULL),
+					IF((t1.feature_group_18 = 1 AND t2.feature_group_18 = 1) ? t2.feature_word_18+', ' : NULL),
+					IF((t1.feature_group_19 = 1 AND t2.feature_group_19 = 1) ? t2.feature_word_19+', ' : NULL),
+					IF((t1.feature_group_20 = 1 AND t2.feature_group_20 = 1) ? t2.feature_word_20+', ' : NULL),
+					IF((t1.feature_group_21 = 1 AND t2.feature_group_21 = 1) ? t2.feature_word_21+', ' : NULL)
                 ) AS overlapping_keywords
             FROM public.final_data t1 
             CROSS JOIN 
