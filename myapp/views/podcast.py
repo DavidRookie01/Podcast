@@ -230,6 +230,7 @@ def update_feedback_negative(request):
         OFFSET 5;
         """, [podcast_name, episode_name])
     recommendations = cursor.fetchall()
+    con.close()
     return JsonResponse({'msg': 'Thank you for your feedback', 'recommendations': recommendations})
 
 
